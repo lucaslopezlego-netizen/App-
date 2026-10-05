@@ -1,0 +1,116 @@
+:root {
+  --fondo: #fafaf7;
+  --texto: #1d1d1b;
+  --suave: #6b6b66;
+  --borde: #e2e1da;
+  --acento: #e2552f;
+  --tarjeta: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fondo: #161614;
+    --texto: #f0efe9;
+    --suave: #a3a29b;
+    --borde: #33332f;
+    --acento: #ff7a52;
+    --tarjeta: #1f1f1c;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--fondo);
+  color: var(--texto);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.55;
+}
+
+a { color: var(--acento); }
+
+main {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+}
+
+.cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.marca {
+  font-weight: 800;
+  font-size: 1.2rem;
+  color: var(--texto);
+  text-decoration: none;
+}
+
+.pie {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 24px 16px;
+  border-top: 1px solid var(--borde);
+  color: var(--suave);
+  font-size: 0.85rem;
+}
+
+h1 { font-size: clamp(1.8rem, 5vw, 2.6rem); line-height: 1.15; }
+
+.boton {
+  display: inline-block;
+  background: var(--acento);
+  color: #fff;
+  border: 0;
+  border-radius: 10px;
+  padding: 12px 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.boton:disabled { opacity: 0.6; cursor: wait; }
+
+.tarjeta {
+  background: var(--tarjeta);
+  border: 1px solid var(--borde);
+  border-radius: 14px;
+  padding: 20px;
+  margin: 20px 0;
+}
+
+.precio { font-size: 2.2rem; font-weight: 800; margin: 0; }
+
+form { display: grid; gap: 14px; }
+
+label { display: grid; gap: 6px; font-weight: 600; }
+
+input, select, textarea {
+  font: inherit;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--borde);
+  background: var(--fondo);
+  color: var(--texto);
+}
+
+.ayuda { color: var(--suave); font-size: 0.9rem; font-weight: 400; }
+
+.error { color: var(--acento); font-weight: 600; }
+
+.resultado { white-space: pre-wrap; }
+
+.legal h2 { font-size: 1.15rem; margin-top: 28px; }
+
+.aviso {
+  border-left: 4px solid var(--acento);
+  padding: 8px 12px;
+  background: var(--tarjeta);
+}
