@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { generarContenido, Rechazo, type Peticion } from "@/lib/claude";
-import { licenciaValida } from "@/lib/license";
-import { devolverUso, LIMITE_MENSUAL, reservarUso } from "@/lib/usage";
+import { planDeLicencia } from "@/lib/license";
+import { devolverUso, reservarUso } from "@/lib/usage";
 
 const MAX_CAMPO = 500;
 
@@ -30,22 +30,26 @@ export async function POST(req: Request) {
       { status: 400 },
     );
   }
-  if (!(await licenciaValida(licencia))) {
+  const plan = await planDeLicencia(licencia);
+  if (!plan) {
     return NextResponse.json(
       { error: "La licencia no es válida o la suscripción ha caducado." },
       { status: 403 },
     );
   }
-  if (!(await reservarUso(licencia))) {
+  const restantes = await reservarUso(licencia, plan.limiteMensual);
+  if (restantes === null) {
     return NextResponse.json(
-      { error: `Has usado tus ${LIMITE_MENSUAL} generaciones de este mes.` },
+      {
+        error: `Has usado las ${plan.limiteMensual} generaciones de tu plan ${plan.nombre} este mes. Mejora tu plan para seguir.`,
+      },
       { status: 429 },
     );
   }
 
   try {
     const resultado = await generarContenido(peticion);
-    return NextResponse.json({ resultado });
+    return NextResponse.json({ resultado, plan: plan.nombre, restantes });
   } catch (err) {
     await devolverUso(licencia);
     if (err instanceof Rechazo) {

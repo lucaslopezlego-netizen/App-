@@ -24,8 +24,9 @@ export default function Terminos() {
 
       <h2>3. Suscripción y pagos</h2>
       <p>
-        La suscripción cuesta 50 $ al año e incluye un número máximo de generaciones al mes,
-        indicado en la página de precios. Los pagos los procesa Lemon Squeezy, que actúa como
+        PostListo ofrece un plan gratuito y planes de pago anuales. Cada plan incluye un número
+        máximo de generaciones al mes, indicado en la página de planes, que se renueva el día 1 de
+        cada mes. Los pagos los procesa Lemon Squeezy, que actúa como
         vendedor registrado y emite la factura. La suscripción se renueva automáticamente salvo que
         la canceles antes de la fecha de renovación. [Indica aquí tu política de reembolsos.]
       </p>

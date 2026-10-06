@@ -10,8 +10,6 @@ const ARCHIVO = `${DIR}/usage.json`;
 
 type Registro = Record<string, number>;
 
-export const LIMITE_MENSUAL = Number(process.env.MONTHLY_LIMIT ?? 100);
-
 // Guardamos un hash, no la licencia, para no almacenar datos sensibles.
 function clave(licencia: string): string {
   const mes = new Date().toISOString().slice(0, 7);
@@ -29,16 +27,18 @@ async function leer(): Promise<Registro> {
 
 let cola: Promise<unknown> = Promise.resolve();
 
-// Reserva un uso antes de llamar a Claude. Devuelve false si se agotó el mes.
-export function reservarUso(licencia: string): Promise<boolean> {
+// Reserva un uso antes de llamar a Claude. Devuelve cuántos quedan después de
+// esta generación, o null si ya se agotó el mes.
+export function reservarUso(licencia: string, limite: number): Promise<number | null> {
   const tarea = cola.then(async () => {
     const datos = await leer();
     const k = clave(licencia);
-    if ((datos[k] ?? 0) >= LIMITE_MENSUAL) return false;
-    datos[k] = (datos[k] ?? 0) + 1;
+    const usados = datos[k] ?? 0;
+    if (usados >= limite) return null;
+    datos[k] = usados + 1;
     await mkdir(DIR, { recursive: true });
     await writeFile(ARCHIVO, JSON.stringify(datos));
-    return true;
+    return limite - usados - 1;
   });
   cola = tarea.catch(() => undefined);
   return tarea;

@@ -1,17 +1,20 @@
-// Valida licencias emitidas por Lemon Squeezy al comprar la suscripción anual.
+// Valida licencias emitidas por Lemon Squeezy al comprar (o activar gratis) un plan.
 // Lemon Squeezy actúa como "merchant of record": cobra, emite la factura y
 // gestiona los impuestos de cada país del comprador.
+
+import { planPorId, planPorVariante, type Plan } from "@/lib/plans";
 
 type RespuestaValidacion = {
   valid: boolean;
   license_key?: { status: string; expires_at: string | null };
-  meta?: { store_id: number };
+  meta?: { store_id: number; variant_id: number };
 };
 
-export async function licenciaValida(clave: string): Promise<boolean> {
+// Devuelve el plan de la licencia, o null si no es válida.
+export async function planDeLicencia(clave: string): Promise<Plan | null> {
   const devKey = process.env.DEV_LICENSE_KEY;
   if (process.env.NODE_ENV !== "production" && devKey && clave === devKey) {
-    return true;
+    return planPorId("emprendedor");
   }
 
   const res = await fetch("https://api.lemonsqueezy.com/v1/licenses/validate", {
@@ -23,11 +26,13 @@ export async function licenciaValida(clave: string): Promise<boolean> {
     body: new URLSearchParams({ license_key: clave }),
     cache: "no-store",
   });
-  if (!res.ok) return false;
+  if (!res.ok) return null;
 
   const data = (await res.json()) as RespuestaValidacion;
-  if (!data.valid || data.license_key?.status !== "active") return false;
+  if (!data.valid || data.license_key?.status !== "active") return null;
 
   // Sin esta comprobación serviría cualquier licencia de otra tienda.
-  return String(data.meta?.store_id) === process.env.LEMONSQUEEZY_STORE_ID;
+  if (String(data.meta?.store_id) !== process.env.LEMONSQUEEZY_STORE_ID) return null;
+
+  return planPorVariante(data.meta?.variant_id) ?? null;
 }
